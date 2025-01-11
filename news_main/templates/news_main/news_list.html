@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}News List{% endblock %}
+
+{% block content %}
+
+<h2 class="text-center mb-4">Latest News</h2>
+<div class="row">
+    {% for item in news %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.title }}</h5>
+                    <p class="card-text">{{ item.description }}</p>
+                    <a href="#" class="btn btn-primary">Read More...</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-center">No news</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
