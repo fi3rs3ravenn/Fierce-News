@@ -26,6 +26,7 @@ def parse_habr_news():
 
         description = 'no desc'
         try:
+            time.sleep(2)
             article_response = requests.get(link)
             article_soup = BeautifulSoup(article_response.content, 'html.parser')
 
@@ -82,7 +83,7 @@ def parse_tengrinews():
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
         articles = soup.select("div.content_main_item")
-
+        print(f'found {len(articles)}')
         for item in articles:
             title_tag = item.select_one('span.content_main_item_title')
             title = title_tag.text.strip() if title_tag else 'No title'
@@ -103,27 +104,29 @@ def parse_tengrinews():
                 print(f"Error while loading: {e}")
 
 
-            published_date = timezone.now() #solution for a while
+ #solution for a while
 
-        print(f'Adding news: {title[:10]}')
-        print(f'Desc: {description[:15]}')
-        print(f'datetime: {published_date}')
+            print(f'Adding news: {title[:10]}')
+            print(f'Desc: {description[:15]}')
 
-        if not News.objects.filter(title=title).exists():
-            print(f'have detected:{title}')
-            News.objects.create(
-                title=title,
-                link=link,
-                description=description,
-                source='TengriNews',
-                published_date=published_date
-            )
-        else:
-            print(f'already have: {title}')
+            if not News.objects.filter(title=title).exists():
+                print(f'have detected:{title}')
+                News.objects.create(
+                    title=title,
+                    link=link,
+                    description=description,
+                    source='TengriNews',
+                    published_date=timezone.now()
+                    )
+            else:
+                print(f'already have: {title}')
+    else:
+        print(f'error: {response.status_code}')
+
 
 def run_all_parsers():
-    # print('Starting Habr news parcing...')
-    # parse_habr_news()
+    print('Starting Habr news parcing...')
+    parse_habr_news()
 
     print('Starting TengriNews parcing...')
     parse_tengrinews()
