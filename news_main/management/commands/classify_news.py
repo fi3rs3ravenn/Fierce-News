@@ -1,41 +1,69 @@
 from django.core.management.base import BaseCommand
 from news_main.models import News
-from transformers import pipeline
+import openai
 
-classifier = pipeline("zero-shot-classification", model="joeddav/xlm-roberta-large-xnli")
+
+openai.api_key = ""
 
 CATEGORIES = [
-    'Искусственный интеллект и нейросети',
-    'Роботы и технологии будущего',
-    'Программирование и IT',
-    'Новости космоса и астрономии',
-    'Мобильные устройства и гаджеты',
-    'Электрокары и автомобильные технологии'
+    "Искусственный интеллект",
+    "Нейросети",
+    "Роботы",
+    "Программирование",
+    "Разработка ПО",
+    "Информационные технологии",
+    "Космос",
+    "Астрономия",
+    "Смартфоны",
+    "Гаджеты",
+    "Ноутбуки",
+    "Электромобили",
+    "Автомобильные технологии",
+    "Кибербезопасность",
+    "Игровая индустрия",
+    "Блокчейн и криптовалюты",
+    "Социальные сети",
+    "Образование",
+    "Наука и технологии",
+    "Здравоохранение и технологии",
 ]
 
-def get_category(text):
-    result = classifier(text, CATEGORIES, multi_class=False)
-    category = result['labels'][0]
-    scores = result['scores'][0]
-    return category, scores
+CONFIDENCE_THRESHOLD = 0.7
+
+def get_category_with_openai(text, categories):
+    prompt = f"Определи категорию для следующего текста:\n\n'{text}'\n\nКатегории: {', '.join(categories)}"
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Ты помощник, который определяет категорию текста."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=50,
+        temperature=0.3
+    )
+    category = response['choices'][0]['message']['content'].strip()
+    return category
 
 class Command(BaseCommand):
-    help = 'Classify existing news in database'
+    help = 'Classify existing news in database using OpenAI API'
 
     def handle(self, *args, **kwargs):
         news_without_category = News.objects.filter(category='Не классифицировано')
         total = news_without_category.count()
-
-        self.stdout.write(f'Found {total} news to classify')
+        self.stdout.write(f"Found {total} news articles to classify.")
 
         if total == 0:
-            self.stdout.write(self.style.WARNING('No news articles need classification.'))
+            self.stdout.write(self.style.WARNING("No news articles need classification."))
             return
 
         for news in news_without_category:
-            text = f'{news.title} {news.description}'
-            category, confidence = get_category(text)
-            news.category = category
-            news.save()
-            self.stdout.write(f'Updated news {news.title[:10]} with ctgry: {category} confidence: {confidence:.2f}')
-        self.stdout.write(self.style.SUCCESS('ALL ARTICLES HAVE BEEN CLASSIFIED'))
+            text = f"Заголовок: {news.title}. Описание: {news.description}."
+            try:
+                category = get_category_with_openai(text, CATEGORIES)
+                news.category = category
+                news.save()
+                self.stdout.write(f'Updated news "{news.title[:30]}" -> {category}')
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"Error processing '{news.title[:30]}': {e}"))
+
+        self.stdout.write(self.style.SUCCESS("All articles have been classified successfully!"))
