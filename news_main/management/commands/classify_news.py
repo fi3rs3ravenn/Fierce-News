@@ -47,7 +47,7 @@ class Command(BaseCommand):
     help = 'Classify existing news in database using OpenAI API'
 
     def handle(self, *args, **kwargs):
-        news_without_category = News.objects.filter(category='Не классифицировано')
+        news_without_category = News.objects.filter(category='Not classified')
         total = news_without_category.count()
         self.stdout.write(f"Found {total} news articles to classify.")
 
