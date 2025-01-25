@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<h1 class="mb-4">
+Welcome to Our News 
+</h1>
+<div class="row">
+    <div class="col-md-4">
+        <h2>Categories</h2>
+        <ul class="list-group">
+            {% for category in categories %}
+            <li class='list-group-item'>
+                <a href="{% url "news_by_category" category=category %}">{{ category }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-8">
+        <h2>Latest News</h2>
+        <div class="list-group">
+            {% for news in latest_news %}
+            <a href="{% url 'news_detail' news_id=news.id %}" target="_blank" class="list-group-item list-group-item-action">
+                <h5>{{ news.title }}</h5>
+                <p>{{ news.description|truncatewords:20 }}</p>
+                <small class="text-muted">Published: {{ news.published_date|date:"d M Y" }}</small>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock  %}

@@ -2,8 +2,7 @@ from django.core.management.base import BaseCommand
 from news_main.models import News
 import openai
 
-
-openai.api_key = ""
+openai.api_key = "my API key"
 
 CATEGORIES = [
     "Искусственный интеллект",

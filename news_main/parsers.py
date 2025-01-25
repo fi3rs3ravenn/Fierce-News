@@ -103,9 +103,6 @@ def parse_tengrinews():
             except Exception as e:
                 print(f"Error while loading: {e}")
 
-
- #solution for a while
-
             print(f'Adding news: {title[:10]}')
             print(f'Desc: {description[:15]}')
 

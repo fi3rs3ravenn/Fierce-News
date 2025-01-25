@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content  %}
+
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title">{{ news_item.title }}</h1>
+        <p class="card-text"><strong>Description:</strong> {{ news_item.description }} </p>
+        <p class="card-text"><strong>Source:</strong> <a href="{{ news_item.link }}" target="_blank"> {{ news_item.link }} </a></p>
+        <p class="card-text"><strong>Category:</strong> {{ news_item.category }} </p>
+        <p class="card-text"><strong>Published Date:</strong> {{ news_item.published_date|date:"d M Y H:i" }} </p>
+    </div>
+</div>
+
+<a href="" class="btn btn-primary mt-3"></a>
+
+{% endblock  %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>News in Category: {{ category }}</h1>
+<div class="list-group">
+    {% for news in news_list %}
+    <a href="{% url 'news_detail' news_id=news.id %}" target="_blank" class="list-group-item list-group-item-action">
+        <h5>{{ news.title }}</h5>
+        <p>{{ news.description|truncatewords:20 }}</p>
+        <small class="text-muted">Published: {{ news.published_date|date:"d M Y" }}</small>
+    </a>
+    {% empty %}
+    <p>There is no News</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
